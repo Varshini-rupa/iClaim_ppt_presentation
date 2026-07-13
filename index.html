@@ -14,8 +14,8 @@
             --navy: #F5F8FC;
             --slate: #FFFFFF;
             --slate2: #CBD5E1;
-            --teal: #12aeac;
-            --teal2: #0d8a89;
+            --teal: #0c7270;
+            --teal2: #095251;
             --blue: #1a2980;
             --blue2: #121e5e;
             --red: #DC2626;
@@ -232,10 +232,18 @@
 
         /* ── DIVIDER ──────────────────────────────────────────────── */
         .divider {
-            height: 2px;
-            background: linear-gradient(90deg, var(--teal) 0%, rgba(18, 200, 160, 0) 100%);
+            height: 6px;
+            background: linear-gradient(to right,
+                var(--blue) 0%, var(--blue) 35%,
+                #ffffff 35%, #ffffff 40%,
+                var(--blue) 40%, var(--blue) 45%,
+                var(--teal) 45%, var(--teal) 55%,
+                var(--blue) 55%, var(--blue) 60%,
+                #ffffff 60%, #ffffff 65%,
+                var(--blue) 65%, var(--blue) 100%
+            );
             margin: 14px 0 18px;
-            border-radius: 2px;
+            border-radius: 1px;
         }
 
         /* ── CARD ─────────────────────────────────────────────────── */
@@ -402,11 +410,19 @@
             position: fixed;
             top: 0;
             left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--teal), var(--blue));
+            height: 8px;
+            background: linear-gradient(to bottom,
+                var(--blue) 0%, var(--blue) 35%,
+                #ffffff 35%, #ffffff 40%,
+                var(--blue) 40%, var(--blue) 45%,
+                var(--teal) 45%, var(--teal) 55%,
+                var(--blue) 55%, var(--blue) 60%,
+                #ffffff 60%, #ffffff 65%,
+                var(--blue) 65%, var(--blue) 100%
+            );
             transition: width 0.4s ease;
             z-index: 9999;
-            box-shadow: 0 0 12px rgba(18, 200, 160, 0.5);
+            box-shadow: 0 1px 4px rgba(26, 41, 128, 0.06);
         }
 
         /* ── NOTES OVERLAY ────────────────────────────────────────── */
@@ -1321,7 +1337,10 @@
             <div class="an-1" style="margin-bottom:4px">
                 <span class="eyebrow">Calibo AI Academy · Capstone Project · Team 15</span>
             </div>
-            <div class="s1-logo an-2">iCLAIM</div>
+            <div class="s1-logo-container an-2" style="display: flex; align-items: center; gap: 20px; margin: 15px 0 20px;">
+                <img src="./logo.png" alt="iClaim Logo" style="height: 100px; width: auto; filter: drop-shadow(0 4px 12px rgba(26, 41, 128, 0.08));" />
+                <div class="s1-logo" style="margin-bottom: 0;">iCLAIM</div>
+            </div>
             <div class="s1-sub an-3">An AI-Assisted Insurance Claim Pre-Assessment Platform</div>
             <div class="s1-context an-4">"Accelerating insurance claim pre-assessment through AI-assisted decision
                 support."</div>
@@ -2040,7 +2059,10 @@
         <!-- ══ SLIDE 15: THANK YOU ════════════════════════════════════ -->
         <section class="slide" id="s15">
             <div class="ty-glow"></div>
-            <div class="thankyou-logo an-1">iCLAIM</div>
+            <div class="ty-logo-container an-1" style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 24px;">
+                <img src="./logo.png" alt="iClaim Logo" style="height: 80px; width: auto; filter: drop-shadow(0 4px 12px rgba(26, 41, 128, 0.08));" />
+                <div class="thankyou-logo" style="margin-bottom: 0;">iCLAIM</div>
+            </div>
             <div class="thankyou-qa an-2">Q &amp; A Session</div>
             <div class="thankyou-cta an-3">
                 "Transforming manual insurance claim verification into an AI-assisted, explainable and
