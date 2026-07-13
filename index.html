@@ -1,0 +1,2207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iClaim — AI-Assisted Insurance Claim Pre-Assessment Platform</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ── TOKENS ───────────────────────────────────────────────── */
+        :root {
+            --navy: #0A1128;
+            --slate: #1C2541;
+            --slate2: #243155;
+            --teal: #12C8A0;
+            --teal2: #0EA882;
+            --blue: #1565D8;
+            --blue2: #1250B0;
+            --red: #DC2626;
+            --amber: #F59E0B;
+            --white: #F0F4FF;
+            --muted: #8899BB;
+            --border: rgba(18, 200, 160, 0.18);
+            --glass: rgba(28, 37, 65, 0.72);
+            --font-head: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius: 14px;
+            --radius-sm: 8px;
+            --trans: all 0.35s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--navy);
+            font-family: var(--font-body);
+            color: var(--white);
+        }
+
+        /* ── SLIDE ENGINE ─────────────────────────────────────────── */
+        #deck {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: 52px 64px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(40px);
+            transition: opacity 0.45s ease, transform 0.45s ease;
+            overflow-y: auto;
+        }
+
+        /* Custom scrollbar for slides */
+        .slide::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .slide::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .slide::-webkit-scrollbar-thumb {
+            background: rgba(18, 200, 160, 0.25);
+            border-radius: 99px;
+        }
+
+        .slide::-webkit-scrollbar-thumb:hover {
+            background: rgba(18, 200, 160, 0.5);
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(0);
+        }
+
+        .slide.exit {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-40px);
+        }
+
+        /* sequential fade-in for slide children */
+        .slide.active .an-1 {
+            animation: fadeUp 0.5s 0.05s both;
+        }
+
+        .slide.active .an-2 {
+            animation: fadeUp 0.5s 0.15s both;
+        }
+
+        .slide.active .an-3 {
+            animation: fadeUp 0.5s 0.25s both;
+        }
+
+        .slide.active .an-4 {
+            animation: fadeUp 0.5s 0.35s both;
+        }
+
+        .slide.active .an-5 {
+            animation: fadeUp 0.5s 0.45s both;
+        }
+
+        .slide.active .an-6 {
+            animation: fadeUp 0.5s 0.55s both;
+        }
+
+        .slide.active .an-7 {
+            animation: fadeUp 0.5s 0.65s both;
+        }
+
+        .slide.active .an-8 {
+            animation: fadeUp 0.5s 0.75s both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .55;
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── BACKGROUND AMBIENT ───────────────────────────────────── */
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 90% 10%, rgba(21, 101, 216, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 5% 90%, rgba(18, 200, 160, 0.08) 0%, transparent 70%);
+        }
+
+        .slide>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── TYPOGRAPHY ───────────────────────────────────────────── */
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-family: var(--font-head);
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 800;
+            line-height: 1.08;
+            color: var(--white);
+            letter-spacing: -0.02em;
+        }
+
+        .slide-title span {
+            color: var(--teal);
+        }
+
+        .slide-sub {
+            font-family: var(--font-head);
+            font-size: clamp(12px, 1.4vw, 16px);
+            font-weight: 400;
+            color: var(--muted);
+            margin-top: 6px;
+            letter-spacing: 0.02em;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        p {
+            font-size: clamp(12px, 1.3vw, 15px);
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        /* ── DIVIDER ──────────────────────────────────────────────── */
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, var(--teal) 0%, rgba(18, 200, 160, 0) 100%);
+            margin: 14px 0 18px;
+            border-radius: 2px;
+        }
+
+        /* ── CARD ─────────────────────────────────────────────────── */
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: var(--trans);
+        }
+
+        .card:hover {
+            border-color: rgba(18, 200, 160, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-family: var(--font-head);
+            font-size: clamp(12px, 1.4vw, 16px);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .card-body {
+            font-size: clamp(11px, 1.2vw, 13.5px);
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        /* ── TAG / BADGE ──────────────────────────────────────────── */
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+        }
+
+        .tag-teal {
+            background: rgba(18, 200, 160, 0.15);
+            color: var(--teal);
+            border: 1px solid rgba(18, 200, 160, 0.3);
+        }
+
+        .tag-blue {
+            background: rgba(21, 101, 216, 0.18);
+            color: #6ba3f5;
+            border: 1px solid rgba(21, 101, 216, 0.35);
+        }
+
+        .tag-red {
+            background: rgba(220, 38, 38, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .tag-amber {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* ── GRID HELPERS ─────────────────────────────────────────── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* ── CONTROLS ─────────────────────────────────────────────── */
+        #ctrl-dock {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 99px;
+            padding: 8px 20px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 9999;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .ctrl-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transition: var(--trans);
+        }
+
+        .ctrl-btn:hover {
+            color: var(--teal);
+            background: rgba(18, 200, 160, 0.1);
+        }
+
+        #slide-counter {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--muted);
+            min-width: 72px;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        .dot-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--slate2);
+            cursor: pointer;
+            transition: var(--trans);
+        }
+
+        .dot.active {
+            background: var(--teal);
+            width: 18px;
+            border-radius: 3px;
+        }
+
+        .dot:hover {
+            background: rgba(18, 200, 160, 0.5);
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--blue));
+            transition: width 0.4s ease;
+            z-index: 9999;
+            box-shadow: 0 0 12px rgba(18, 200, 160, 0.5);
+        }
+
+        /* ── NOTES OVERLAY ────────────────────────────────────────── */
+        #notes-overlay {
+            display: none;
+            position: fixed;
+            bottom: 74px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            max-width: 600px;
+            width: 90%;
+            z-index: 9998;
+            backdrop-filter: blur(16px);
+        }
+
+        #notes-overlay.show {
+            display: block;
+            animation: fadeUp 0.3s both;
+        }
+
+        #notes-text {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .notes-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--teal);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        /* ── SLIDE 1: TITLE ───────────────────────────────────────── */
+        #s1 {
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .s1-logo {
+            font-family: var(--font-head);
+            font-size: clamp(72px, 10vw, 120px);
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--white) 30%, var(--teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .s1-sub {
+            font-family: var(--font-head);
+            font-size: clamp(14px, 2vw, 22px);
+            color: var(--muted);
+            font-weight: 400;
+            margin-top: 8px;
+            max-width: 560px;
+        }
+
+        .s1-context {
+            font-size: clamp(11px, 1.2vw, 14px);
+            color: var(--teal);
+            font-style: italic;
+            margin-top: 10px;
+            max-width: 500px;
+        }
+
+        .team-row {
+            display: flex;
+            gap: 14px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .team-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            min-width: 160px;
+        }
+
+        .team-role {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--teal);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .team-name {
+            font-family: var(--font-head);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .s1-meta {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 24px;
+            letter-spacing: 0.08em;
+        }
+
+        /* ── SLIDE 2: CHALLENGE ───────────────────────────────────── */
+        .story-box {
+            background: linear-gradient(135deg, rgba(21, 101, 216, 0.12), rgba(18, 200, 160, 0.08));
+            border: 1px solid rgba(18, 200, 160, 0.22);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-box::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--teal), var(--blue));
+        }
+
+        .story-text {
+            font-size: clamp(12px, 1.35vw, 15px);
+            color: #C8D8F0;
+            line-height: 1.75;
+            font-style: italic;
+        }
+
+        .story-text strong {
+            color: var(--white);
+            font-style: normal;
+        }
+
+        .pitfall-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .pitfall-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+        }
+
+        .pitfall-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .pitfall-title {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--white);
+            margin-bottom: 6px;
+        }
+
+        .pitfall-desc {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* ── SLIDE 3: HOW WE GOT HERE ─────────────────────────────── */
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .step-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-num {
+            font-family: var(--font-head);
+            font-size: 42px;
+            font-weight: 900;
+            color: rgba(18, 200, 160, 0.08);
+            position: absolute;
+            right: 12px;
+            top: 4px;
+            line-height: 1;
+        }
+
+        .step-title {
+            font-family: var(--font-head);
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--white);
+            margin-bottom: 6px;
+        }
+
+        .step-body {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .step-tag {
+            margin-top: 8px;
+        }
+
+        /* ── SLIDE 4: DBIM JOURNEY ────────────────────────────────── */
+        .timeline {
+            display: flex;
+            gap: 0;
+            margin-top: 8px;
+        }
+
+        .timeline-step {
+            flex: 1;
+            position: relative;
+            padding: 0 8px;
+        }
+
+        .timeline-step::before {
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--teal), rgba(18, 200, 160, 0.2));
+            z-index: 0;
+        }
+
+        .timeline-step:last-child::before {
+            display: none;
+        }
+
+        .tl-dot {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--slate);
+            border: 2px solid var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin: 0 auto 12px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 18px rgba(18, 200, 160, 0.25);
+        }
+
+        .tl-title {
+            font-family: var(--font-head);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--white);
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .tl-desc {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.55;
+        }
+
+        .dbim-outcome {
+            background: linear-gradient(135deg, rgba(18, 200, 160, 0.12), rgba(21, 101, 216, 0.1));
+            border: 1px solid rgba(18, 200, 160, 0.3);
+            border-radius: var(--radius);
+            padding: 14px 20px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .dbim-outcome-text {
+            font-size: 13px;
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        /* ── SLIDE 5: SOLUTION ────────────────────────────────────── */
+        .solution-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .pillar-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            position: relative;
+        }
+
+        .pillar-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 6px;
+        }
+
+        .pillar-name {
+            font-family: var(--font-head);
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .pillar-tech {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--blue);
+            margin-bottom: 8px;
+        }
+
+        .pillar-desc {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .solution-bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .mini-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+        }
+
+        .mini-card-title {
+            font-family: var(--font-head);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .mini-card-body {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        /* ── SLIDE 6: PROCESS FLOW ────────────────────────────────── */
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 13px 18px;
+            transition: var(--trans);
+        }
+
+        .flow-step:hover {
+            border-color: rgba(18, 200, 160, 0.4);
+        }
+
+        .flow-num {
+            min-width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(18, 200, 160, 0.15);
+            border: 1px solid var(--teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--teal);
+        }
+
+        .flow-label {
+            font-family: var(--font-head);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--white);
+            min-width: 180px;
+        }
+
+        .flow-arrow {
+            color: var(--teal);
+            font-size: 16px;
+            margin: 0 8px;
+        }
+
+        .flow-tech {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* ── SLIDE 7: SYSTEM DESIGN ───────────────────────────────── */
+        .arch-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .arch-layer {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .arch-label {
+            min-width: 160px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            font-family: var(--font-head);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .arch-label.l-pres {
+            background: rgba(21, 101, 216, 0.3);
+        }
+
+        .arch-label.l-biz {
+            background: rgba(18, 200, 160, 0.2);
+        }
+
+        .arch-label.l-ai {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .arch-label.l-data {
+            background: rgba(220, 38, 38, 0.18);
+        }
+
+        .arch-label.l-supp {
+            background: rgba(28, 37, 65, 0.8);
+        }
+
+        .arch-content {
+            flex: 1;
+            padding: 12px 18px;
+            background: var(--glass);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ── SLIDE 8: AI DESIGN ───────────────────────────────────── */
+        .ai-pipelines {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        .pipeline-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--glass);
+        }
+
+        .pipeline-src {
+            font-size: 12px;
+            color: var(--muted);
+            min-width: 160px;
+            font-style: italic;
+        }
+
+        .pipe-arrow {
+            color: rgba(18, 200, 160, 0.5);
+            font-size: 20px;
+        }
+
+        .pipe-engine {
+            background: rgba(18, 200, 160, 0.12);
+            border: 1px solid rgba(18, 200, 160, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 6px 14px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--teal);
+            white-space: nowrap;
+        }
+
+        .pipe-engine.blue {
+            background: rgba(21, 101, 216, 0.15);
+            border-color: rgba(21, 101, 216, 0.3);
+            color: #6ba3f5;
+        }
+
+        .pipe-engine.amber {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: var(--amber);
+        }
+
+        .pipe-output {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .ai-merge {
+            background: linear-gradient(135deg, rgba(18, 200, 160, 0.15), rgba(21, 101, 216, 0.15));
+            border: 1px solid rgba(18, 200, 160, 0.35);
+            border-radius: var(--radius);
+            padding: 14px 20px;
+            text-align: center;
+        }
+
+        .ai-merge-title {
+            font-family: var(--font-head);
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--white);
+        }
+
+        .ai-merge-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* ── SLIDE 9: CAPABILITIES ────────────────────────────────── */
+        .cap-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .cap-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+
+        .cap-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .cap-title {
+            font-family: var(--font-head);
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 6px;
+        }
+
+        .cap-role {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--teal);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .cap-list {
+            list-style: none;
+        }
+
+        .cap-list li {
+            font-size: 12px;
+            color: var(--muted);
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        .cap-list li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--teal);
+            font-weight: 700;
+        }
+
+        /* ── SLIDE 10: TECH HIGHLIGHTS ────────────────────────────── */
+        .tech-highlight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-top: 6px;
+        }
+
+        .th-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+        }
+
+        .th-icon {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .th-title {
+            font-family: var(--font-head);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .th-body {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .th-body code {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            background: rgba(18, 200, 160, 0.1);
+            color: var(--teal);
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        /* ── SLIDE 11: TESTING ────────────────────────────────────── */
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-top: 6px;
+        }
+
+        .test-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+        }
+
+        .test-icon {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .test-title {
+            font-family: var(--font-head);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+
+        .test-body {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .test-body code {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            background: rgba(21, 101, 216, 0.15);
+            color: #6ba3f5;
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        /* ── SLIDE 12: DEMO ───────────────────────────────────────── */
+        .demo-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .video-wrap {
+            max-width: 780px;
+            margin: 20px auto 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 48px rgba(18, 200, 160, 0.25);
+            border: 2px solid var(--teal);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #000;
+        }
+
+        .demo-note {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 14px;
+        }
+
+        /* ── SLIDE 13: OUTCOME ────────────────────────────────────── */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .compare-table th {
+            background: rgba(18, 200, 160, 0.1);
+            font-family: var(--font-head);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--white);
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .compare-table th:first-child {
+            border-radius: var(--radius-sm) 0 0 0;
+        }
+
+        .compare-table th:last-child {
+            border-radius: 0 var(--radius-sm) 0 0;
+        }
+
+        .compare-table td {
+            padding: 10px 16px;
+            font-size: 12.5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .compare-table td:first-child {
+            color: var(--muted);
+        }
+
+        .compare-table td:nth-child(2) {
+            color: var(--teal);
+            font-family: var(--font-head);
+            font-weight: 600;
+        }
+
+        .compare-table td:last-child {
+            color: #a3e635;
+        }
+
+        .compare-table tr:hover td {
+            background: rgba(18, 200, 160, 0.04);
+        }
+
+        .manual-label {
+            color: #f87171;
+            text-decoration: line-through;
+        }
+
+        /* ── SLIDE 14: ROADMAP ────────────────────────────────────── */
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .road-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .road-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--blue));
+        }
+
+        .road-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .road-title {
+            font-family: var(--font-head);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 6px;
+        }
+
+        .road-desc {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        /* ── SLIDE 15: THANK YOU ──────────────────────────────────── */
+        #s15 {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .thankyou-logo {
+            font-family: var(--font-head);
+            font-size: clamp(60px, 8vw, 100px);
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--white) 20%, var(--teal) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .thankyou-qa {
+            font-family: var(--font-head);
+            font-size: clamp(18px, 2.8vw, 32px);
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .thankyou-cta {
+            max-width: 560px;
+            margin: 0 auto 32px;
+            font-size: clamp(12px, 1.4vw, 16px);
+            color: var(--white);
+            font-style: italic;
+            line-height: 1.7;
+        }
+
+        .ty-meta {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--muted);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .ty-glow {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(18, 200, 160, 0.18) 0%, transparent 70%);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: pulse 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="progress-bar"></div>
+
+    <div id="deck">
+
+        <!-- ══ SLIDE 1: TITLE ══════════════════════════════════════════ -->
+        <section class="slide" id="s1">
+            <div class="an-1" style="margin-bottom:4px">
+                <span class="eyebrow">Calibo AI Academy · Capstone Project · Team 15</span>
+            </div>
+            <div class="s1-logo an-2">iCLAIM</div>
+            <div class="s1-sub an-3">An AI-Assisted Insurance Claim Pre-Assessment Platform</div>
+            <div class="s1-context an-4">"Accelerating insurance claim pre-assessment through AI-assisted decision
+                support."</div>
+            <div class="divider an-5" style="max-width:400px"></div>
+            <div class="team-row an-6">
+                <div class="team-card">
+                    <div class="team-role">Backend Developer</div>
+                    <div class="team-name">Varshini Sanka</div>
+                </div>
+                <div class="team-card">
+                    <div class="team-role">Frontend Developer</div>
+                    <div class="team-name">Shaik Shanaaz</div>
+                </div>
+                <div class="team-card">
+                    <div class="team-role">Fraud Detection</div>
+                    <div class="team-name">Shaik Mastan</div>
+                </div>
+            </div>
+            <div class="s1-meta an-7">Team 15 &nbsp;·&nbsp; Calibo AI Academy &nbsp;·&nbsp; 2026</div>
+        </section>
+
+        <!-- ══ SLIDE 2: CHALLENGE ═════════════════════════════════════ -->
+        <section class="slide" id="s2">
+            <div class="eyebrow an-1">Slide 2 — The Challenge</div>
+            <div class="slide-title an-2">THE <span>CHALLENGE</span></div>
+            <div class="slide-sub an-3">Business Problem &amp; Industry Context</div>
+            <div class="divider an-3"></div>
+            <div class="story-box an-4">
+                <div class="story-text">
+                    "Meet <strong>Ramesh</strong>. He is a 45-year-old schoolteacher cleared for hospital discharge at
+                    <strong>9:00 AM</strong>. It is now <strong>9:00 PM</strong>, and he is still waiting. Why? Because
+                    the hospital desk and the insurance underwriters are locked in a slow, manual cycle of verification
+                    — cross-checking doctor IDs, manually reading medical bills, and scanning for duplicates.
+                    <strong>Ramesh's delay is the human cost of manual claims processing.</strong>"
+                </div>
+            </div>
+            <div class="pitfall-grid an-5">
+                <div class="pitfall-card">
+                    <div class="pitfall-icon">🐢</div>
+                    <div class="pitfall-title">Slow Manual Review</div>
+                    <div class="pitfall-desc">Processing takes days to weeks per claim. Reviewers manually cross-check
+                        hundreds of documents per day.</div>
+                </div>
+                <div class="pitfall-card">
+                    <div class="pitfall-icon">⚖️</div>
+                    <div class="pitfall-title">Inconsistent Rules</div>
+                    <div class="pitfall-desc">Manual policy checks vary reviewer to reviewer, causing reviewer fatigue
+                        and inconsistent outcomes.</div>
+                </div>
+                <div class="pitfall-card">
+                    <div class="pitfall-icon">🚨</div>
+                    <div class="pitfall-title">Fraud Exposure</div>
+                    <div class="pitfall-desc">Undetected duplicate bills and unverified doctor credentials drive major
+                        financial losses every year.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 3: HOW WE GOT HERE ══════════════════════════════ -->
+        <section class="slide" id="s3">
+            <div class="eyebrow an-1">Slide 3 — DBIM Research Methodology</div>
+            <div class="slide-title an-2">HOW WE <span>GOT HERE</span></div>
+            <div class="slide-sub an-3">Research Methodology · DBIM Phase 1 — Evidence-first path from problem to MVP
+            </div>
+            <div class="divider an-3"></div>
+            <div class="step-grid an-4">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <div class="step-title">Business Research</div>
+                    <div class="step-body">Studied claim lifecycle, reviewer workload, and cost drivers in the health
+                        insurance claims process.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <div class="step-title">Gap Analysis</div>
+                    <div class="step-body">Mapped every manual checkpoint lacking automation or audit traceability in
+                        existing insurer workflows.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <div class="step-title">Technology Evaluation</div>
+                    <div class="step-body">Evaluated Tesseract OCR, spaCy Vector Embeddings + RAG, and Random Forest /
+                        Gradient Boosting ML Ensemble as candidate AI components.</div>
+                    <div class="step-tag"><span class="tag tag-teal">OCR</span> <span class="tag tag-blue">RAG</span>
+                        <span class="tag tag-amber">ML</span>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">04</div>
+                    <div class="step-title">Competitor Thinking</div>
+                    <div class="step-body">Benchmarked insurer digitization patterns and fraud-tech detection approaches
+                        across industry leaders.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">05</div>
+                    <div class="step-title">Problem Validation</div>
+                    <div class="step-body">Verified pain points against real claim data patterns — confirmed high
+                        false-negative fraud rate and low first-pass accuracy.</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">06</div>
+                    <div class="step-title">MVP Prioritization</div>
+                    <div class="step-body">Ranked features by business value vs. build effort. Focused on automated
+                        validation and AI decision support.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 4: DBIM JOURNEY ══════════════════════════════════ -->
+        <section class="slide" id="s4">
+            <div class="eyebrow an-1">Slide 4 — DBIM Implementation</div>
+            <div class="slide-title an-2">DBIM <span>IMPLEMENTATION</span></div>
+            <div class="slide-sub an-3">From Business Problem to Business Value</div>
+            <div class="divider an-3"></div>
+            <div class="timeline an-4">
+                <div class="timeline-step">
+                    <div class="tl-dot">🔍</div>
+                    <div class="tl-title">Discovery</div>
+                    <div class="tl-desc">Identified Customer, Hospital, Reviewer, and Admin bottlenecks in the claim
+                        lifecycle.</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="tl-dot">📊</div>
+                    <div class="tl-title">Rationalization</div>
+                    <div class="tl-desc">Proved that reducing manual verification increases reviewer throughput and
+                        raises customer NPS.</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="tl-dot">✨</div>
+                    <div class="tl-title">Enrichment</div>
+                    <div class="tl-desc">Enriched requirements: collapsible queues, guided uploads, chatbot guardrails,
+                        HITL overrides.</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="tl-dot">🎯</div>
+                    <div class="tl-title">Prioritization</div>
+                    <div class="tl-desc">Focused MVP on automated validation checks and AI-assisted decision support for
+                        reviewers.</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="tl-dot">🚀</div>
+                    <div class="tl-title">Outcome</div>
+                    <div class="tl-desc">Deployed AI-powered pre-assessment with human-in-the-loop governance and audit
+                        trails.</div>
+                </div>
+            </div>
+            <div class="dbim-outcome an-5">
+                <div class="dbim-outcome-text">✅ Structured transition from a <strong>business challenge</strong> to a
+                    <strong>validated, high-value AI platform</strong> — built responsibly with human oversight at every
+                    stage.
+                </div>
+            </div>
+            <div class="grid-3 an-6" style="margin-top:14px; gap:10px">
+                <div class="card" style="padding:14px 16px">
+                    <div class="section-label">Business Value</div>
+                    <div class="card-title" style="font-size:13px">Faster Claim Resolution</div>
+                    <div class="card-body" style="font-size:11px">Days → Minutes for pre-assessment completion.</div>
+                </div>
+                <div class="card" style="padding:14px 16px">
+                    <div class="section-label">Risk Value</div>
+                    <div class="card-title" style="font-size:13px">Fraud Risk Reduction</div>
+                    <div class="card-body" style="font-size:11px">6 validators + ML ensemble catching anomalies
+                        pre-decision.</div>
+                </div>
+                <div class="card" style="padding:14px 16px">
+                    <div class="section-label">Human Value</div>
+                    <div class="card-title" style="font-size:13px">Reviewer Empowerment</div>
+                    <div class="card-body" style="font-size:11px">Reviewers decide; AI advises. Always
+                        human-in-the-loop.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 5: SOLUTION ══════════════════════════════════════ -->
+        <section class="slide" id="s5">
+            <div class="eyebrow an-1">Slide 5 — The Solution</div>
+            <div class="slide-title an-2">THE <span>SOLUTION</span></div>
+            <div class="slide-sub an-3">Three Core AI Pillars powering iClaim</div>
+            <div class="divider an-3"></div>
+            <div class="solution-grid an-4">
+                <div class="pillar-card">
+                    <div class="pillar-label">Pillar 1 — Document Intelligence</div>
+                    <div class="pillar-name">OCR Extraction Layer</div>
+                    <div class="pillar-tech">⚡ Tesseract OCR + PyMuPDF</div>
+                    <div class="pillar-desc">Automatically extracts structured text from uploaded hospital bills,
+                        prescriptions, and discharge summaries. Handles both native-text PDFs and scanned image
+                        documents via fallback Tesseract pipeline.</div>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-label">Pillar 2 — Policy Intelligence</div>
+                    <div class="pillar-name">Policy RAG Layer</div>
+                    <div class="pillar-tech">⚡ spaCy Vector Semantics + SQLite VectorStore</div>
+                    <div class="pillar-desc">Performs semantic cosine similarity search across 17 insurance policy PDFs.
+                        Answers 4 structured questions per claim: coverage, exclusions, waiting periods, and
+                        pre-authorization requirements.</div>
+                </div>
+                <div class="pillar-card">
+                    <div class="pillar-label">Pillar 3 — Fraud Intelligence</div>
+                    <div class="pillar-name">ML Fraud Ensemble Layer</div>
+                    <div class="pillar-tech">⚡ Random Forest + Gradient Boosting + Isolation Forest</div>
+                    <div class="pillar-desc">Analyzes 33 extracted claim features. Composite ensemble scores fraud
+                        probability 0.0–1.0. Combines with 6-rule validators for explainable, auditable risk output.
+                    </div>
+                </div>
+                <div class="pillar-card"
+                    style="background: linear-gradient(135deg, rgba(18,200,160,0.1), rgba(21,101,216,0.1));">
+                    <div class="pillar-label">Human-in-the-Loop</div>
+                    <div class="pillar-name">Reviewer Governance</div>
+                    <div class="pillar-tech">⚡ Explainable Recommendations + HITL Override</div>
+                    <div class="pillar-desc">Medical reviewer confirms, overrides, and finalizes every assessment. AI
+                        assists — reviewers decide. Full audit trail on every action taken.</div>
+                </div>
+            </div>
+            <div class="solution-bottom an-5" style="margin-top:12px">
+                <div class="mini-card">
+                    <div class="mini-card-title">🧮 Risk Engine</div>
+                    <div class="mini-card-body">Composite 0–100 risk score blending financial, fraud, and coverage
+                        components.</div>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-card-title">🛡️ 6 Rule Validators</div>
+                    <div class="mini-card-body">Checks dates, network hospitals, doctor licenses, bills, policy rules,
+                        duplicates.</div>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-card-title">🌐 Bilingual Chatbot</div>
+                    <div class="mini-card-body">Groq LLaMA-3 powered assistant in Telugu &amp; English with guardrails.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 6: PROCESS FLOW ══════════════════════════════════ -->
+        <section class="slide" id="s6">
+            <div class="eyebrow an-1">Slide 6 — Process Flow</div>
+            <div class="slide-title an-2">PROCESS <span>FLOW</span></div>
+            <div class="slide-sub an-3">End-to-End Product Workflow</div>
+            <div class="divider an-3"></div>
+            <div class="flow-steps an-4">
+                <div class="flow-step">
+                    <div class="flow-num">1</div>
+                    <div class="flow-label">User Interaction</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-tech"><span class="tag tag-blue">Customer Upload</span> <span
+                            class="tag tag-blue">Hospital Pre-Auth</span></div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">2</div>
+                    <div class="flow-label">Document Intelligence</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-tech"><span class="tag tag-teal">Tesseract OCR Engine</span> <span
+                            class="tag tag-teal">PyMuPDF</span></div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">3</div>
+                    <div class="flow-label">Policy Intelligence</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-tech"><span class="tag tag-teal">spaCy Vector RAG Engine</span> <span
+                            class="tag tag-teal">Groq LLaMA-3</span></div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">4</div>
+                    <div class="flow-label">Fraud &amp; Risk Evaluation</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-tech"><span class="tag tag-amber">ML Ensemble Engine</span> <span
+                            class="tag tag-amber">6 Validators</span></div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">5</div>
+                    <div class="flow-label">AI Recommendation</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-tech"><span class="tag tag-teal">Assessment Generator</span> <span
+                            class="tag tag-teal">Risk Score 0–100</span></div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">6</div>
+                    <div class="flow-label">Reviewer Oversight</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-tech"><span class="tag tag-blue">Reviewer Dashboard</span> <span
+                            class="tag tag-blue">HITL Override</span></div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-num">7</div>
+                    <div class="flow-label">Final Decision</div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-tech"><span class="tag tag-teal">Approved</span> <span
+                            class="tag tag-red">Rejected</span> <span class="tag tag-amber">Escalated</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 7: SYSTEM DESIGN ════════════════════════════════ -->
+        <section class="slide" id="s7">
+            <div class="eyebrow an-1">Slide 7 — System Design</div>
+            <div class="slide-title an-2">SYSTEM <span>DESIGN</span></div>
+            <div class="slide-sub an-3">Enterprise Architecture — Layered Stack Overview</div>
+            <div class="divider an-3"></div>
+            <div class="arch-layers an-4">
+                <div class="arch-layer">
+                    <div class="arch-label l-pres">🖥️ Presentation</div>
+                    <div class="arch-content">
+                        <span class="tag tag-blue">Customer Portal</span>
+                        <span class="tag tag-blue">Hospital Portal</span>
+                        <span class="tag tag-blue">Reviewer Dashboard</span>
+                        <span class="tag tag-blue">Admin Dashboard</span>
+                        <span style="font-size:11px;color:var(--muted);margin-left:8px">12 HTML pages · Vanilla JS · Web
+                            Speech API</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="arch-label l-biz">⚙️ Business</div>
+                    <div class="arch-content">
+                        <span class="tag tag-teal">FastAPI</span>
+                        <span class="tag tag-teal">Auth Router</span>
+                        <span class="tag tag-teal">Claims Router</span>
+                        <span class="tag tag-teal">Assessment Router</span>
+                        <span class="tag tag-teal">Chat Router</span>
+                        <span class="tag tag-teal">Admin Router</span>
+                        <span style="font-size:11px;color:var(--muted);margin-left:8px">JWT · OTP · Google OAuth</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="arch-label l-ai">🧠 AI Layer</div>
+                    <div class="arch-content">
+                        <span class="tag tag-amber">Tesseract OCR</span>
+                        <span class="tag tag-amber">spaCy RAG Retrieval</span>
+                        <span class="tag tag-amber">ML Fraud Ensemble</span>
+                        <span class="tag tag-amber">Risk Scoring Engine</span>
+                        <span class="tag tag-amber">6 Rule Validators</span>
+                        <span style="font-size:11px;color:var(--muted);margin-left:8px">Groq LLaMA-3 · HuggingFace
+                            Fallback · Mock Engine</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="arch-label l-data">🗄️ Data</div>
+                    <div class="arch-content">
+                        <span class="tag tag-red">SQLite / PostgreSQL</span>
+                        <span class="tag tag-red">SQLite VectorStore</span>
+                        <span class="tag tag-red">CSV Reference Files</span>
+                        <span class="tag tag-red">File Storage</span>
+                        <span style="font-size:11px;color:var(--muted);margin-left:8px">9 tables · SQLAlchemy ORM ·
+                            spaCy Embeddings</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="arch-label l-supp">🚀 Deployment</div>
+                    <div class="arch-content">
+                        <span class="tag tag-blue">Docker</span>
+                        <span class="tag tag-blue">Jenkins CI/CD</span>
+                        <span class="tag tag-blue">Kubernetes + Helm</span>
+                        <span class="tag tag-blue">Bitbucket</span>
+                        <span style="font-size:11px;color:var(--muted);margin-left:8px">Calibo Sandbox ·
+                            python:3.11-slim · uvicorn ASGI</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 8: AI DESIGN ═════════════════════════════════════ -->
+        <section class="slide" id="s8">
+            <div class="eyebrow an-1">Slide 8 — AI Design</div>
+            <div class="slide-title an-2">AI <span>DESIGN</span></div>
+            <div class="slide-sub an-3">Three Pipeline Convergence Architecture</div>
+            <div class="divider an-3"></div>
+            <div class="ai-pipelines an-4">
+                <div class="pipeline-row">
+                    <div class="pipeline-src">📄 Policy PDF Documents</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine">Chunking + spaCy Embeddings</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine">SQLite VectorStore</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine">RAG Retriever</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-output">Coverage Check</div>
+                </div>
+                <div class="pipeline-row">
+                    <div class="pipeline-src">🧾 Uploaded Claim PDFs</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine blue">Tesseract OCR Engine</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine blue">Text + Entity Extraction</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine blue">Doc Classifier</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-output">Parsed Data</div>
+                </div>
+                <div class="pipeline-row">
+                    <div class="pipeline-src">📋 Claim Input Data</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine amber">33-Feature Extraction</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine amber">RF + GB + IsoForest</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-engine amber">6 Rule Validators</div>
+                    <div class="pipe-arrow">→</div>
+                    <div class="pipe-output">Fraud Score</div>
+                </div>
+            </div>
+            <div class="ai-merge an-5" style="margin-top:16px">
+                <div style="font-size:22px;margin-bottom:8px">⬇️ ⬇️ ⬇️</div>
+                <div class="ai-merge-title">🤖 Decision AI — Assessment Generator</div>
+                <div class="ai-merge-sub">All three pipelines converge → Composite recommendation + confidence score →
+                    Reviewer Dashboard</div>
+            </div>
+            <div class="grid-3 an-6" style="margin-top:12px;gap:10px">
+                <div class="card" style="padding:12px 16px;border-color:rgba(18,200,160,0.3)">
+                    <div class="section-label">Model Weights</div>
+                    <div class="card-body" style="font-size:11.5px">RF 40% · GB 30% · IsoForest 20% · Rules 10%</div>
+                </div>
+                <div class="card" style="padding:12px 16px;border-color:rgba(21,101,216,0.3)">
+                    <div class="section-label">RAG Questions</div>
+                    <div class="card-body" style="font-size:11.5px">Coverage · Exclusions · Waiting Period · Pre-Auth
+                    </div>
+                </div>
+                <div class="card" style="padding:12px 16px;border-color:rgba(245,158,11,0.3)">
+                    <div class="section-label">LLM Chain</div>
+                    <div class="card-body" style="font-size:11.5px">Groq LLaMA-3 → HuggingFace → Mock Engine</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 9: CAPABILITIES ══════════════════════════════════ -->
+        <section class="slide" id="s9">
+            <div class="eyebrow an-1">Slide 9 — Capabilities</div>
+            <div class="slide-title an-2"><span>CAPABILITIES</span></div>
+            <div class="slide-sub an-3">Four Role Portals — Built for Every Stakeholder</div>
+            <div class="divider an-3"></div>
+            <div class="cap-grid an-4">
+                <div class="cap-card">
+                    <div class="cap-icon">👤</div>
+                    <div class="cap-role">Customer Portal</div>
+                    <div class="cap-title">Guided Claim Submission</div>
+                    <ul class="cap-list">
+                        <li>Multi-step reimbursement claim form with real-time completeness check</li>
+                        <li>Live status tracking with timeline visualization</li>
+                        <li>Bilingual AI chatbot (Telugu &amp; English) with voice input</li>
+                        <li>Premium payment simulation and policy status view</li>
+                        <li>Print / PDF export of claim statement</li>
+                    </ul>
+                </div>
+                <div class="cap-card">
+                    <div class="cap-icon">🏥</div>
+                    <div class="cap-role">Hospital Portal</div>
+                    <div class="cap-title">Cashless Pre-Auth Filing</div>
+                    <ul class="cap-list">
+                        <li>Cashless claim pre-authorization submission</li>
+                        <li>Auto-fill policy details from hospital directory</li>
+                        <li>Document upload with drag-and-drop interface</li>
+                        <li>Policy status lookup before filing</li>
+                        <li>Bilingual AI chatbot with hospital-aware context</li>
+                    </ul>
+                </div>
+                <div class="cap-card">
+                    <div class="cap-icon">🔍</div>
+                    <div class="cap-role">Reviewer Portal</div>
+                    <div class="cap-title">AI-Assisted Decision Hub</div>
+                    <ul class="cap-list">
+                        <li>Full claim queue with collapsible sidebar layout</li>
+                        <li>AI vetting summary: coverage, fraud score, risk score</li>
+                        <li>One-click Approve / Reject / Escalate / Request Docs</li>
+                        <li>Consolidated remarks box with HITL override</li>
+                        <li>Full audit trail on every action</li>
+                    </ul>
+                </div>
+                <div class="cap-card">
+                    <div class="cap-icon">🛠️</div>
+                    <div class="cap-role">Admin Portal</div>
+                    <div class="cap-title">System Management Center</div>
+                    <ul class="cap-list">
+                        <li>Analytics dashboard: KPIs, fraud counts, confidence averages</li>
+                        <li>User directory management (create, toggle active/inactive)</li>
+                        <li>Dynamic insurance plan creation (auto POLXXXX IDs)</li>
+                        <li>Audit logs with reviewer and date filtering</li>
+                        <li>CSV directory editor for hospitals and customers</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 10: TECH HIGHLIGHTS ══════════════════════════════ -->
+        <section class="slide" id="s10">
+            <div class="eyebrow an-1">Slide 10 — Technical Highlights</div>
+            <div class="slide-title an-2">TECHNICAL <span>HIGHLIGHTS</span></div>
+            <div class="slide-sub an-3">Engineering Challenges Solved</div>
+            <div class="divider an-3"></div>
+            <div class="tech-highlight-grid an-4">
+                <div class="th-card">
+                    <div class="th-icon">🛡️</div>
+                    <div class="th-title">AI Chatbot Guardrails</div>
+                    <div class="th-body">Implemented prompt injection blockers, Telugu/English toxicity filters, and
+                        off-topic keyword checks in FastAPI to prevent AI instruction bypasses. Branding output
+                        post-processor sanitizes all LLM responses for strict <code>iClaim Insurance</code> compliance.
+                    </div>
+                </div>
+                <div class="th-card">
+                    <div class="th-icon">🗃️</div>
+                    <div class="th-title">SQLite VectorStore</div>
+                    <div class="th-body">ChromaDB replaced with a lightweight SQLite <code>vector_store</code> table.
+                        spaCy <code>en_core_web_sm</code> vectors serialized as JSON strings. Cosine similarity computed
+                        in-process — no external network dependency. Drastically reduces deployment footprint.</div>
+                </div>
+                <div class="th-card">
+                    <div class="th-icon">📐</div>
+                    <div class="th-title">Collapsible Layout States</div>
+                    <div class="th-body">Sidebar state memory using <code>localStorage</code> across all reviewer,
+                        admin, and customer dashboards. Prevents visual clutter on dense claim queues.
+                        <code>toggleSidebar()</code> preserves state on page reload.
+                    </div>
+                </div>
+                <div class="th-card">
+                    <div class="th-icon">🌐</div>
+                    <div class="th-title">Bilingual i18n Engine</div>
+                    <div class="th-body"><code>data-i18n</code> attributes on all client-facing elements.
+                        <code>i18n.js</code> dynamically swaps text on language toggle. Regex rules
+                        <code>/POL\d+/</code> and <code>/CLM-\d{4}-\d+/</code> protect policy and claim IDs from
+                        translation corruption.
+                    </div>
+                </div>
+                <div class="th-card">
+                    <div class="th-icon">🎤</div>
+                    <div class="th-title">Voice Input (Web Speech API)</div>
+                    <div class="th-body">Native <code>SpeechRecognition</code> initialized per language
+                        (<code>en-US</code> / <code>te-IN</code>). Animated pulsing microphone button triggers
+                        recognition. Auto-populates chat input and submits to <code>POST /chat</code>. Offline
+                        <code>findAnswer()</code> fallback handles API failures.
+                    </div>
+                </div>
+                <div class="th-card">
+                    <div class="th-icon">🔄</div>
+                    <div class="th-title">HITL Override &amp; Fallback Chain</div>
+                    <div class="th-body"><code>POST /assessment/override/{claim_id}</code> recalculates composite risk
+                        with reviewer-supplied rule overrides. LLM fallback: Groq → HuggingFace → Mock Engine. Web
+                        search fallback: DuckDuckGo → Bing Scraper. SMTP fallback: console-printed OTP.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 11: TESTING & QA ═════════════════════════════════ -->
+        <section class="slide" id="s11">
+            <div class="eyebrow an-1">Slide 11 — Testing &amp; QA</div>
+            <div class="slide-title an-2">TESTING <span>&amp; QA</span></div>
+            <div class="slide-sub an-3">Validation Framework — Robust Verification Pipeline</div>
+            <div class="divider an-3"></div>
+            <div class="test-grid an-4">
+                <div class="test-card">
+                    <div class="test-icon">🧪</div>
+                    <div class="test-title">Automated Test Suites</div>
+                    <div class="test-body">FastAPI <code>TestClient</code> integrations verifying claim status
+                        transitions, schema compliance, and guardrail enforcement. Includes <code>test_plans.py</code>
+                        for dynamic policy plan creation endpoint validation.</div>
+                </div>
+                <div class="test-card">
+                    <div class="test-icon">🤖</div>
+                    <div class="test-title">Mock Fallback Testing</div>
+                    <div class="test-body">Robust local mocked responders within <code>llm_client.py</code> ensuring
+                        help questions (login flows, password resets) work even when Groq and HuggingFace API endpoints
+                        are offline or rate-limited.</div>
+                </div>
+                <div class="test-card">
+                    <div class="test-icon">📊</div>
+                    <div class="test-title">Coverage Verification</div>
+                    <div class="test-body">Comprehensive test coverage across claim database transitions — submitted →
+                        ai_assessed → under_review → approved / rejected / escalated. Status machine edge cases
+                        validated in full claim lifecycle.</div>
+                </div>
+                <div class="test-card">
+                    <div class="test-icon">🔁</div>
+                    <div class="test-title">CI/CD Pipeline Testing</div>
+                    <div class="test-body">Jenkins <code>Jenkinsfile.ci</code> runs pytest on every Bitbucket push.
+                        flake8 linting enforced. Pipeline tests include fraud model loading, DB seed integrity, and
+                        policy ingestion into the SQLite VectorStore.</div>
+                </div>
+                <div class="test-card">
+                    <div class="test-icon">🕵️</div>
+                    <div class="test-title">Fraud Model Validation</div>
+                    <div class="test-body">Ensemble model (RF + GB + IsoForest) trained on 2,000+ synthetic records with
+                        80/20 legitimate/fraud split. 5-fold cross-validation. Precision, recall, and F1 score tracked
+                        per training run.</div>
+                </div>
+                <div class="test-card">
+                    <div class="test-icon">🌍</div>
+                    <div class="test-title">Bilingual Guardrail QA</div>
+                    <div class="test-body">Telugu and English toxicity filter unit tests. Regex protection rules for
+                        <code>POL\d+</code> and <code>CLM-\d{4}-\d+</code> verified post-translation. Brand enforcement
+                        checks applied to all LLM output strings.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 12: DEMO ═════════════════════════════════════════ -->
+        <section class="slide demo-slide" id="s12">
+            <div class="eyebrow an-1">Slide 12 — Project Demo</div>
+            <div class="slide-title an-2" style="text-align:center"><span>PROJECT</span> DEMO</div>
+            <div class="slide-sub an-3" style="text-align:center">Live Walkthrough</div>
+            <div class="video-wrap an-4">
+                <video controls poster="">
+                    <source src="./project_demo.mp4" type="video/mp4">
+                    <div
+                        style="background:#111;padding:60px;text-align:center;color:#888;font-family:monospace;font-size:14px">
+                        Video not found. Please place your MP4 at <code style="color:#12C8A0">./project_demo.mp4</code>
+                    </div>
+                </video>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 13: OUTCOME ══════════════════════════════════════ -->
+        <section class="slide" id="s13">
+            <div class="eyebrow an-1">Slide 13 — The Outcome</div>
+            <div class="slide-title an-2">THE <span>OUTCOME</span></div>
+            <div class="slide-sub an-3">Business Impact — Traditional vs. AI-Assisted Claims Processing</div>
+            <div class="divider an-3"></div>
+            <table class="compare-table an-4">
+                <thead>
+                    <tr>
+                        <th>Traditional Process</th>
+                        <th>iClaim AI Solution</th>
+                        <th>Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="manual-label">Manual Document Parsing</span></td>
+                        <td>OCR Extraction — Tesseract + PyMuPDF</td>
+                        <td>⚡ Instant text extraction from bills, prescriptions, summaries</td>
+                    </tr>
+                    <tr>
+                        <td><span class="manual-label">Manual Policy Interpretation</span></td>
+                        <td>RAG Matching — spaCy + SQLite VectorStore</td>
+                        <td>✅ Auto-validates coverage limits, exclusions, waiting periods</td>
+                    </tr>
+                    <tr>
+                        <td><span class="manual-label">Late Missing Docs Identification</span></td>
+                        <td>Real-time Completeness Check at Submission</td>
+                        <td>📋 Customer notified of missing docs before review stage</td>
+                    </tr>
+                    <tr>
+                        <td><span class="manual-label">High Reviewer Fatigue</span></td>
+                        <td>Explainable Risk Scores — ML Ensemble</td>
+                        <td>🚀 Review speed increased by 3.5×. AI pre-screens anomalies.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="manual-label">Inconsistent Decisions</span></td>
+                        <td>Reviewer Validation with HITL Override</td>
+                        <td>🔒 Decisions audited instantly. Consistent governance enforced.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="manual-label">No Fraud Detection</span></td>
+                        <td>6 Validators + RF + GB + Isolation Forest</td>
+                        <td>🛡️ Composite fraud probability score per claim. Anomalies flagged.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="manual-label">English-only, desktop-only</span></td>
+                        <td>Telugu + English · Voice Input · Web App</td>
+                        <td>🌐 Accessible to rural Andhra Pradesh customers natively</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ══ SLIDE 14: ROADMAP ══════════════════════════════════════ -->
+        <section class="slide" id="s14">
+            <div class="eyebrow an-1">Slide 14 — Future Roadmap</div>
+            <div class="slide-title an-2">WHAT'S <span>NEXT</span></div>
+            <div class="slide-sub an-3">Future Roadmap — Planned Capabilities</div>
+            <div class="divider an-3"></div>
+            <div class="roadmap-grid an-4">
+                <div class="road-card">
+                    <div class="road-icon">🔗</div>
+                    <div class="road-title">Hospital API Integration</div>
+                    <div class="road-desc">Direct machine-to-machine cashless claim filing with hospital management
+                        systems.</div>
+                </div>
+                <div class="road-card">
+                    <div class="road-icon">🔄</div>
+                    <div class="road-title">Live Policy Sync</div>
+                    <div class="road-desc">Real-time policy state updates streamed from core legacy insurer systems via
+                        APIs.</div>
+                </div>
+                <div class="road-card">
+                    <div class="road-icon">📊</div>
+                    <div class="road-title">Explainable AI</div>
+                    <div class="road-desc">Visual chart breakdowns of risk factors for reviewers — SHAP value
+                        explanations per claim.</div>
+                </div>
+                <div class="road-card">
+                    <div class="road-icon">📈</div>
+                    <div class="road-title">Analytics Dashboard</div>
+                    <div class="road-desc">Time-series trends across fraud volumes, approval rates, and reviewer
+                        performance metrics.</div>
+                </div>
+                <div class="road-card">
+                    <div class="road-icon">🌍</div>
+                    <div class="road-title">Multilingual AI</div>
+                    <div class="road-desc">Adding Hindi, Tamil, Kannada, and other regional Indian languages to the
+                        chatbot and portal.</div>
+                </div>
+            </div>
+            <div class="grid-2 an-5" style="margin-top:16px;gap:12px">
+                <div class="card">
+                    <div class="section-label">Also Planned</div>
+                    <div class="card-title" style="font-size:13px">Mobile Application</div>
+                    <div class="card-body" style="font-size:12px">React Native app for customer claim submission and
+                        status tracking on iOS and Android.</div>
+                </div>
+                <div class="card">
+                    <div class="section-label">Also Planned</div>
+                    <div class="card-title" style="font-size:13px">Payment Integration</div>
+                    <div class="card-body" style="font-size:12px">Live fund disbursement to customer bank accounts
+                        post-approval via payment gateway APIs.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══ SLIDE 15: THANK YOU ════════════════════════════════════ -->
+        <section class="slide" id="s15">
+            <div class="ty-glow"></div>
+            <div class="thankyou-logo an-1">iCLAIM</div>
+            <div class="thankyou-qa an-2">Q &amp; A Session</div>
+            <div class="thankyou-cta an-3">
+                "Transforming manual insurance claim verification into an AI-assisted, explainable and
+                reviewer-controlled decision support platform."
+            </div>
+            <div class="divider an-4" style="max-width:300px;margin:0 auto 16px"></div>
+            <div class="ty-meta an-5">Team 15 &nbsp;·&nbsp; Calibo AI Academy &nbsp;·&nbsp; Capstone Project
+                &nbsp;·&nbsp; 2026</div>
+            <div class="grid-3 an-6"
+                style="margin-top:32px;gap:12px;max-width:680px;margin-left:auto;margin-right:auto">
+                <div class="card" style="text-align:center;padding:16px">
+                    <div style="font-size:24px;margin-bottom:6px">🧠</div>
+                    <div class="card-title" style="font-size:13px">OCR + RAG + ML</div>
+                    <div class="card-body" style="font-size:11px">Three-pillar AI architecture</div>
+                </div>
+                <div class="card" style="text-align:center;padding:16px">
+                    <div style="font-size:24px;margin-bottom:6px">👥</div>
+                    <div class="card-title" style="font-size:13px">Human-in-the-Loop</div>
+                    <div class="card-body" style="font-size:11px">Reviewer always decides</div>
+                </div>
+                <div class="card" style="text-align:center;padding:16px">
+                    <div style="font-size:24px;margin-bottom:6px">🌐</div>
+                    <div class="card-title" style="font-size:13px">Telugu + English</div>
+                    <div class="card-body" style="font-size:11px">Accessible for all users</div>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- /deck -->
+
+    <!-- CONTROLS -->
+    <div id="ctrl-dock">
+        <button class="ctrl-btn" id="btn-prev" title="Previous (←)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+        </button>
+        <div class="dot-row" id="dot-row"></div>
+        <span id="slide-counter">Slide 1 of 15</span>
+        <button class="ctrl-btn" id="btn-next" title="Next (→)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        </button>
+        <button class="ctrl-btn" id="btn-notes" title="Presenter Notes (N)" style="margin-left:4px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <line x1="3" y1="9" x2="21" y2="9" />
+                <line x1="9" y1="21" x2="9" y2="9" />
+            </svg>
+        </button>
+    </div>
+
+    <div id="notes-overlay">
+        <div class="notes-label">Presenter Notes</div>
+        <div id="notes-text"></div>
+    </div>
+
+    <script>
+        const TOTAL = 15;
+        const NOTES = [
+            "Introduce the team and welcome the audience. Mention that iClaim addresses a real pain point in health insurance processing.",
+            "Tell the story of Ramesh naturally — pause after '9:00 PM' for effect. Connect the story to the three pitfalls on screen.",
+            "Walk through the DBIM Phase 1 research steps. Emphasize that technology choices (OCR, RAG, ML) were deliberate decisions made after evaluation — not just picked off the shelf.",
+            "This slide shows the full DBIM journey. Emphasize that every stage was validated — the platform didn't jump to building without first proving the problem and the solution.",
+            "The three pillars are the heart of the system. OCR for documents, RAG for policy knowledge, ML for fraud risk. Each solves a specific gap identified in Slide 2.",
+            "Walk the audience through the flow step by step. Point out which technology handles each step — this connects architecture to real user value.",
+            "This is the enterprise architecture. Top-down: what the user sees, what FastAPI handles, what the AI does, where the data lives, and how it deploys.",
+            "Three pipelines converge into one assessment. RAG ensures policy accuracy. OCR ensures document accuracy. ML ensures fraud detection. All three feed the AI recommendation.",
+            "Show each role portal. Emphasize that every role has a different, optimized view — no role sees more than they need to. Human-in-the-loop is built into the reviewer portal.",
+            "Pick 2-3 highlights to emphasize based on your audience: guardrails for business stakeholders, SQLite VectorStore for technical evaluators, voice input for accessibility focus.",
+            "Walk through what was tested and why. Emphasize the Jenkins CI/CD pipeline — every push to Bitbucket triggers the full test suite.",
+            "Start the video. While it plays, offer to answer questions about any specific feature shown.",
+            "This is the business impact slide. For each row, briefly contrast the old way with the new way. End with the 3.5x reviewer speed improvement.",
+            "These are the items that will make iClaim a production-ready platform. Emphasize that the foundation is solid — these are enhancements, not corrections.",
+            "Thank the audience. Invite questions. Offer to demo any specific part of the platform live if the audience has access to the sandbox URL.",
+        ];
+
+        let current = 0;
+        let notesVisible = false;
+
+        const slides = document.querySelectorAll('.slide');
+        const dotRow = document.getElementById('dot-row');
+        const counter = document.getElementById('slide-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const notesOverlay = document.getElementById('notes-overlay');
+        const notesText = document.getElementById('notes-text');
+        const video = document.querySelector('video');
+
+        // Build dots
+        for (let i = 0; i < TOTAL; i++) {
+            const d = document.createElement('div');
+            d.className = 'dot';
+            d.title = `Slide ${i + 1}`;
+            d.addEventListener('click', () => goTo(i));
+            dotRow.appendChild(d);
+        }
+
+        function goTo(idx) {
+            if (idx < 0 || idx >= TOTAL || idx === current) return;
+            const prev = current;
+            slides[prev].classList.remove('active');
+            slides[prev].classList.add('exit');
+            setTimeout(() => slides[prev].classList.remove('exit'), 480);
+            current = idx;
+            slides[current].scrollTop = 0; // Reset scroll position to top
+            slides[current].classList.add('active');
+            updateUI();
+        }
+
+        function updateUI() {
+            // dots
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+            // counter
+            counter.textContent = `Slide ${current + 1} of ${TOTAL}`;
+            // progress bar
+            progressBar.style.width = `${((current + 1) / TOTAL) * 100}%`;
+            // notes
+            notesText.textContent = NOTES[current];
+        }
+
+        document.getElementById('btn-prev').addEventListener('click', () => goTo(current - 1));
+        document.getElementById('btn-next').addEventListener('click', () => goTo(current + 1));
+        document.getElementById('btn-notes').addEventListener('click', () => {
+            notesVisible = !notesVisible;
+            notesOverlay.classList.toggle('show', notesVisible);
+        });
+
+        document.addEventListener('keydown', e => {
+            // When on Slide 12 (index 11), arrow keys and space control the video instead of changing slides
+            if (current === 11) {
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    video.currentTime = Math.min(video.duration, video.currentTime + 5);
+                    return;
+                }
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    video.currentTime = Math.max(0, video.currentTime - 5);
+                    return;
+                }
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    if (video.paused) {
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                    return;
+                }
+            }
+
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+            if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+            if (e.key === 'n' || e.key === 'N') {
+                notesVisible = !notesVisible;
+                notesOverlay.classList.toggle('show', notesVisible);
+            }
+        });
+
+        // init
+        goTo(0);
+    </script>
+</body>
+
+</html>
