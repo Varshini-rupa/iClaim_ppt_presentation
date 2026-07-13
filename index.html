@@ -11,19 +11,19 @@
     <style>
         /* ── TOKENS ───────────────────────────────────────────────── */
         :root {
-            --navy: #0A1128;
-            --slate: #1C2541;
-            --slate2: #243155;
-            --teal: #12C8A0;
-            --teal2: #0EA882;
-            --blue: #1565D8;
-            --blue2: #1250B0;
+            --navy: #F5F8FC;
+            --slate: #FFFFFF;
+            --slate2: #CBD5E1;
+            --teal: #12aeac;
+            --teal2: #0d8a89;
+            --blue: #1a2980;
+            --blue2: #121e5e;
             --red: #DC2626;
-            --amber: #F59E0B;
-            --white: #F0F4FF;
-            --muted: #8899BB;
-            --border: rgba(18, 200, 160, 0.18);
-            --glass: rgba(28, 37, 65, 0.72);
+            --amber: #D97706;
+            --white: #0A1128;
+            --muted: #475569;
+            --border: rgba(26, 41, 128, 0.08);
+            --glass: rgba(255, 255, 255, 0.85);
             --font-head: 'Outfit', sans-serif;
             --font-body: 'Inter', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
@@ -82,12 +82,12 @@
         }
 
         .slide::-webkit-scrollbar-thumb {
-            background: rgba(18, 200, 160, 0.25);
+            background: rgba(18, 174, 172, 0.25);
             border-radius: 99px;
         }
 
         .slide::-webkit-scrollbar-thumb:hover {
-            background: rgba(18, 200, 160, 0.5);
+            background: rgba(18, 174, 172, 0.5);
         }
 
         .slide.active {
@@ -173,8 +173,8 @@
             pointer-events: none;
             z-index: 0;
             background:
-                radial-gradient(ellipse 60% 50% at 90% 10%, rgba(21, 101, 216, 0.12) 0%, transparent 70%),
-                radial-gradient(ellipse 50% 40% at 5% 90%, rgba(18, 200, 160, 0.08) 0%, transparent 70%);
+                radial-gradient(ellipse 60% 50% at 90% 10%, rgba(26, 41, 128, 0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 5% 90%, rgba(18, 174, 172, 0.04) 0%, transparent 70%);
         }
 
         .slide>* {
@@ -247,11 +247,13 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             transition: var(--trans);
+            box-shadow: 0 4px 18px rgba(26, 41, 128, 0.03);
         }
 
         .card:hover {
-            border-color: rgba(18, 200, 160, 0.4);
+            border-color: rgba(18, 174, 172, 0.25);
             transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(26, 41, 128, 0.07);
         }
 
         .card-title {
@@ -281,27 +283,27 @@
         }
 
         .tag-teal {
-            background: rgba(18, 200, 160, 0.15);
+            background: rgba(18, 174, 172, 0.08);
             color: var(--teal);
-            border: 1px solid rgba(18, 200, 160, 0.3);
+            border: 1px solid rgba(18, 174, 172, 0.18);
         }
 
         .tag-blue {
-            background: rgba(21, 101, 216, 0.18);
-            color: #6ba3f5;
-            border: 1px solid rgba(21, 101, 216, 0.35);
+            background: rgba(26, 41, 128, 0.06);
+            color: var(--blue);
+            border: 1px solid rgba(26, 41, 128, 0.18);
         }
 
         .tag-red {
-            background: rgba(220, 38, 38, 0.15);
-            color: #f87171;
-            border: 1px solid rgba(220, 38, 38, 0.3);
+            background: rgba(220, 38, 38, 0.06);
+            color: var(--red);
+            border: 1px solid rgba(220, 38, 38, 0.18);
         }
 
         .tag-amber {
-            background: rgba(245, 158, 11, 0.15);
+            background: rgba(245, 158, 11, 0.06);
             color: var(--amber);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.18);
         }
 
         /* ── GRID HELPERS ─────────────────────────────────────────── */
@@ -339,7 +341,7 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             z-index: 9999;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 8px 32px rgba(26, 41, 128, 0.06);
         }
 
         .ctrl-btn {
@@ -359,7 +361,7 @@
 
         .ctrl-btn:hover {
             color: var(--teal);
-            background: rgba(18, 200, 160, 0.1);
+            background: rgba(18, 174, 172, 0.1);
         }
 
         #slide-counter {
@@ -393,7 +395,7 @@
         }
 
         .dot:hover {
-            background: rgba(18, 200, 160, 0.5);
+            background: rgba(18, 174, 172, 0.5);
         }
 
         #progress-bar {
@@ -520,8 +522,8 @@
 
         /* ── SLIDE 2: CHALLENGE ───────────────────────────────────── */
         .story-box {
-            background: linear-gradient(135deg, rgba(21, 101, 216, 0.12), rgba(18, 200, 160, 0.08));
-            border: 1px solid rgba(18, 200, 160, 0.22);
+            background: linear-gradient(135deg, rgba(26, 41, 128, 0.06), rgba(18, 174, 172, 0.06));
+            border: 1px solid rgba(18, 174, 172, 0.18);
             border-radius: var(--radius);
             padding: 20px 24px;
             position: relative;
@@ -540,7 +542,7 @@
 
         .story-text {
             font-size: clamp(12px, 1.35vw, 15px);
-            color: #C8D8F0;
+            color: var(--white);
             line-height: 1.75;
             font-style: italic;
         }
@@ -1153,7 +1155,7 @@
         }
 
         .compare-table th {
-            background: rgba(18, 200, 160, 0.1);
+            background: rgba(18, 174, 172, 0.08);
             font-family: var(--font-head);
             font-size: 13px;
             font-weight: 700;
@@ -1174,7 +1176,7 @@
         .compare-table td {
             padding: 10px 16px;
             font-size: 12.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(26, 41, 128, 0.06);
             vertical-align: middle;
         }
 
@@ -1189,15 +1191,15 @@
         }
 
         .compare-table td:last-child {
-            color: #a3e635;
+            color: #15803d;
         }
 
         .compare-table tr:hover td {
-            background: rgba(18, 200, 160, 0.04);
+            background: rgba(18, 174, 172, 0.05);
         }
 
         .manual-label {
-            color: #f87171;
+            color: var(--red);
             text-decoration: line-through;
         }
 
