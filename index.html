@@ -2138,11 +2138,15 @@
         }
 
         function goTo(idx) {
-            if (idx < 0 || idx >= TOTAL || idx === current) return;
+            if (idx < 0 || idx >= TOTAL) return;
+            if (idx === current && slides[current].classList.contains('active')) return;
+            
             const prev = current;
-            slides[prev].classList.remove('active');
-            slides[prev].classList.add('exit');
-            setTimeout(() => slides[prev].classList.remove('exit'), 480);
+            if (prev !== idx && slides[prev]) {
+                slides[prev].classList.remove('active');
+                slides[prev].classList.add('exit');
+                setTimeout(() => slides[prev].classList.remove('exit'), 480);
+            }
             current = idx;
             slides[current].scrollTop = 0; // Reset scroll position to top
             slides[current].classList.add('active');
