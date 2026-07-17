@@ -2229,53 +2229,108 @@
         <!-- ══ SLIDE 14: ROADMAP ══════════════════════════════════════ -->
         <section class="slide" id="s14">
             <div class="eyebrow an-1">Slide 14 — Future Roadmap</div>
-            <div class="slide-title an-2">FUTURE VISION: <span>WEB3 &amp; COLLUSION GRAPHS</span></div>
-            <div class="slide-sub an-3">GNN Fraud Networks, Smart Contract Settlements, and LayoutLM</div>
+            <div class="slide-title an-2">Future Vision: <span>Scaling iCLAIM to Enterprise</span></div>
+            <div class="slide-sub an-3">Roadmap for Scaling AI-Assisted Insurance Claim Processing</div>
             <div class="divider an-3"></div>
-            <div class="roadmap-grid an-4">
+            
+            <div class="roadmap-grid an-4" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px;">
                 <div class="road-card">
-                    <div class="road-icon">🔗</div>
-                    <div class="road-title">Hospital API Integration</div>
-                    <div class="road-desc">Direct machine-to-machine cashless claim filing with hospital management
-                        systems.</div>
+                    <div class="road-icon">🏥</div>
+                    <div class="road-title">Hospital System Integration</div>
+                    <div class="road-desc">Integrate with Hospital Information Systems (HIS) and Electronic Health Records (EHR) to receive patient and treatment information directly without manual document uploads.
+                        <strong style="color: var(--teal); display: block; margin-top: 4px; font-weight: 700;">Benefit: Eliminates manual document submission.</strong>
+                    </div>
                 </div>
                 <div class="road-card">
                     <div class="road-icon">🔄</div>
-                    <div class="road-title">Live Policy Sync</div>
-                    <div class="road-desc">Real-time policy state updates streamed from core legacy insurer systems via
-                        APIs.</div>
+                    <div class="road-title">Insurance Core Integration</div>
+                    <div class="road-desc">Connect with live Policy Management Systems and Claim Management Systems to automatically retrieve policy details, coverage information, and claim history.
+                        <strong style="color: var(--teal); display: block; margin-top: 4px; font-weight: 700;">Benefit: Real-time policy verification.</strong>
+                    </div>
+                </div>
+                <div class="road-card">
+                    <div class="road-icon">🤖</div>
+                    <div class="road-title">Advanced AI Assistant</div>
+                    <div class="road-desc">Introduce an AI Copilot that explains policy decisions, highlights missing documents, answers reviewer questions, and provides transparent claim recommendations.
+                        <strong style="color: var(--teal); display: block; margin-top: 4px; font-weight: 700;">Benefit: Faster reviewer decisions.</strong>
+                    </div>
+                </div>
+                <div class="road-card">
+                    <div class="road-icon">🛡️</div>
+                    <div class="road-title">Enterprise Fraud Analytics</div>
+                    <div class="road-desc">Detect organized fraud patterns across hospitals, doctors, agents, and multiple claims using advanced analytics and network-based fraud detection.
+                        <strong style="color: var(--teal); display: block; margin-top: 4px; font-weight: 700;">Benefit: Detects organized fraud patterns.</strong>
+                    </div>
                 </div>
                 <div class="road-card">
                     <div class="road-icon">📊</div>
-                    <div class="road-title">Explainable AI</div>
-                    <div class="road-desc">Visual chart breakdowns of risk factors for reviewers — SHAP value
-                        explanations per claim.</div>
+                    <div class="road-title">Business Intelligence Dashboard</div>
+                    <div class="road-desc">Provide real-time dashboards for claim trends, approval rates, reviewer productivity, fraud statistics, operational KPIs, and SLA monitoring.
+                        <strong style="color: var(--teal); display: block; margin-top: 4px; font-weight: 700;">Benefit: Enables data-driven operational decisions.</strong>
+                    </div>
                 </div>
                 <div class="road-card">
-                    <div class="road-icon">📈</div>
-                    <div class="road-title">Analytics Dashboard</div>
-                    <div class="road-desc">Time-series trends across fraud volumes, approval rates, and reviewer
-                        performance metrics.</div>
-                </div>
-                <div class="road-card">
-                    <div class="road-icon">🌍</div>
-                    <div class="road-title">Multilingual AI</div>
-                    <div class="road-desc">Adding Hindi, Tamil, Kannada, and other regional Indian languages to the
-                        chatbot and portal.</div>
+                    <div class="road-icon">🌐</div>
+                    <div class="road-title">Multi-Insurance SaaS Platform</div>
+                    <div class="road-desc">Expand beyond HDFC ERGO to support multiple insurance providers through a scalable cloud-based multi-tenant architecture.
+                        <strong style="color: var(--teal); display: block; margin-top: 4px; font-weight: 700;">Benefit: Supports multiple insurers on one scalable platform.</strong>
+                    </div>
                 </div>
             </div>
-            <div class="grid-2 an-5" style="margin-top:16px;gap:12px">
-                <div class="card">
-                    <div class="section-label">Also Planned</div>
-                    <div class="card-title" style="font-size:13px">Mobile Application</div>
-                    <div class="card-body" style="font-size:12px">React Native app for customer claim submission and
-                        status tracking on iOS and Android.</div>
+
+            <div class="phase-timeline-container an-5" style="display: flex; justify-content: space-between; align-items: stretch; gap: 8px; margin-top: 14px; width: 100%;">
+                <!-- Phase 1 -->
+                <div class="phase-card" style="flex: 1; background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; position: relative; overflow: hidden; display: flex; flex-direction: column;">
+                    <div style="font-family: var(--font-mono); font-size: 8px; color: var(--teal); font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">Phase 1</div>
+                    <div class="phase-title" style="font-family: var(--font-head); font-size: 11px; font-weight: 800; color: var(--blue); margin-bottom: 4px;">MVP</div>
+                    <ul class="phase-list" style="margin: 0; padding-left: 12px; font-size: 9.5px; color: var(--muted); line-height: 1.4; list-style-type: disc; flex: 1;">
+                        <li>Customer &amp; Hospital Portals</li>
+                        <li>AI Pre-Assessment</li>
+                        <li>Reviewer Dashboard</li>
+                        <li>Human-in-the-Loop</li>
+                    </ul>
                 </div>
-                <div class="card">
-                    <div class="section-label">Also Planned</div>
-                    <div class="card-title" style="font-size:13px">Payment Integration</div>
-                    <div class="card-body" style="font-size:12px">Live fund disbursement to customer bank accounts
-                        post-approval via payment gateway APIs.</div>
+
+                <div class="phase-arrow" style="display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--teal); font-weight: 700; user-select: none;">➔</div>
+
+                <!-- Phase 2 -->
+                <div class="phase-card" style="flex: 1; background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; position: relative; overflow: hidden; display: flex; flex-direction: column;">
+                    <div style="font-family: var(--font-mono); font-size: 8px; color: var(--teal); font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">Phase 2</div>
+                    <div class="phase-title" style="font-family: var(--font-head); font-size: 11px; font-weight: 800; color: var(--blue); margin-bottom: 4px;">Enterprise Integration</div>
+                    <ul class="phase-list" style="margin: 0; padding-left: 12px; font-size: 9.5px; color: var(--muted); line-height: 1.4; list-style-type: disc; flex: 1;">
+                        <li>Hospital APIs</li>
+                        <li>Policy Systems</li>
+                        <li>Payment Gateway</li>
+                        <li>DigiLocker Integration</li>
+                    </ul>
+                </div>
+
+                <div class="phase-arrow" style="display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--teal); font-weight: 700; user-select: none;">➔</div>
+
+                <!-- Phase 3 -->
+                <div class="phase-card" style="flex: 1; background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; position: relative; overflow: hidden; display: flex; flex-direction: column;">
+                    <div style="font-family: var(--font-mono); font-size: 8px; color: var(--teal); font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">Phase 3</div>
+                    <div class="phase-title" style="font-family: var(--font-head); font-size: 11px; font-weight: 800; color: var(--blue); margin-bottom: 4px;">Advanced AI</div>
+                    <ul class="phase-list" style="margin: 0; padding-left: 12px; font-size: 9.5px; color: var(--muted); line-height: 1.4; list-style-type: disc; flex: 1;">
+                        <li>AI Copilot</li>
+                        <li>Explainable AI</li>
+                        <li>Predictive Claim Analytics</li>
+                        <li>Intelligent Fraud Detection</li>
+                    </ul>
+                </div>
+
+                <div class="phase-arrow" style="display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--teal); font-weight: 700; user-select: none;">➔</div>
+
+                <!-- Phase 4 -->
+                <div class="phase-card" style="flex: 1; background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; position: relative; overflow: hidden; display: flex; flex-direction: column;">
+                    <div style="font-family: var(--font-mono); font-size: 8px; color: var(--teal); font-weight: 700; text-transform: uppercase; margin-bottom: 2px;">Phase 4</div>
+                    <div class="phase-title" style="font-family: var(--font-head); font-size: 11px; font-weight: 800; color: var(--blue); margin-bottom: 4px;">Production Scale</div>
+                    <ul class="phase-list" style="margin: 0; padding-left: 12px; font-size: 9.5px; color: var(--muted); line-height: 1.4; list-style-type: disc; flex: 1;">
+                        <li>Multi-Insurance Support</li>
+                        <li>Cloud Deployment</li>
+                        <li>Regulatory Compliance</li>
+                        <li>Enterprise Monitoring</li>
+                    </ul>
                 </div>
             </div>
         </section>
